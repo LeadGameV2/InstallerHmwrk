@@ -1,61 +1,26 @@
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        Installer.install();
 
-        StringBuilder log = new StringBuilder();
+        GameProgress char1 = new GameProgress(3,6,3,1.1);
+        GameProgress char2 = new GameProgress(2,5,9,4.7);
+        GameProgress char3 = new GameProgress(1,9,5,3.1);
 
-        File mainDirectory = new File("C://DistinctProjects/Games");
-
-        File srcDir = new File(mainDirectory + "/src");
-        File resDir = new File(mainDirectory + "/res");
-        File saveDir = new File(mainDirectory + "/savegames");
-        File tempDir = new File(mainDirectory + "/temp");
-
-        File mainDir = new File(srcDir + "/main");
-        File testDir = new File(srcDir + "/test");
-
-        File drawDir = new File(resDir + "/drawables");
-        File vectorsDir = new File(resDir + "/vectors");
-
-        File mainFile = new File(mainDir + "/Main.java");
-        File utilFile = new File(mainDir + "/Utils.java");
-
-        File tempFile = new File(tempDir + "/temp.txt");
-
-        List<File> installation = new ArrayList<>(Arrays.asList(
-                srcDir, resDir, saveDir, tempDir, mainDir, testDir, drawDir, vectorsDir, mainFile, utilFile, tempFile
+        List<String> saves = new ArrayList<>(Arrays.asList(
+                "C://DistinctProjects/Games/savegames/char1.dat",
+                "C://DistinctProjects/Games/savegames/char2.dat",
+                "C://DistinctProjects/Games/savegames/char3.dat"
         ));
+        Save.saveGame(saves.get(0), char1);
+        Save.saveGame(saves.get(1), char2);
+        Save.saveGame(saves.get(2), char3);
 
-        installation.stream().filter(x -> !x.getPath().contains("."))
-                .forEach(x -> {
-                    if (x.mkdir()) {
-                        log.append(x + " Installed" + "\n");
-                    } else {
-                        log.append(x + " Installation failed" + "\n");
-                    }
-                });
+        Save.zipSaves("C://DistinctProjects/Games/savegames/saves.zip", saves);
 
-        installation.stream().filter(x -> x.getPath().contains("."))
-                .forEach(x -> {
-                    try {
-                        if (x.createNewFile())
-                            log.append(x + " Installed" + "\n");
-                    } catch (IOException exception) {
-                        log.append(exception.getMessage() + "\n");
-                    }
-                });
-
-        try (FileWriter write = new FileWriter(tempFile)) {
-            write.write(log.toString());
-            write.flush();
-        } catch (IOException exception) {
-            System.out.println(exception.getMessage());
-        }
     }
 }
